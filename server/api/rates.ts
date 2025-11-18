@@ -1,13 +1,16 @@
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig(event)
+  const query = getQuery(event)
+  const base = query.base ? String(query.base) : 'USD'
 
-  // Default to fetching EUR, GBP, CAD, JPY based on USD
+  const targets = ['EUR', 'USD', 'GBP', 'JPY', 'CAD', 'CHF'].filter(c => c !== base)
+
   try {
     const response = await $fetch('https://api.freecurrencyapi.com/v1/latest', {
       query: {
         apikey: config.currencyApiKey,
-        base_currency: 'USD',
-        currencies: 'EUR,GBP,JPY,CAD'
+        base_currency: base,
+        currencies: targets.join(',')
       }
     })
     return response
